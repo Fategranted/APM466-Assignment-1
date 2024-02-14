@@ -1,0 +1,48 @@
+
+#Question 2: Empirical Questions
+## Part a) 
+
+```{r}
+## Setup and Load the Data:
+library(readxl)
+setwd("~/APM466") # set working environment on computer
+bonds_data <- read_excel("Bonds.xlsx")
+bonds_data
+
+```
+
+```{r}
+# calculate the dirty price
+
+dirtyprice <- matrix(nrow = length(bonds_data$ISIN), ncol = 12)
+
+
+for (i in 1:length(bonds_data$ISIN)) {
+  for (j in 1:12){
+    accint = as.numeric(bonds_data[i, 7]) * as.numeric(bonds_data[i, 3])
+    dirtyprice[i, j] <- accint + as.numeric(bonds_data[i, j + 7])
+  } 
+}
+dirtyprice
+
+```
+
+```{r}
+
+#calculate the ytm
+library(quantmod)
+ytm <- matrix(nrow = length(bonds_data$ISIN), ncol = 12)
+
+maturity <- c("6/1/2024", "6/1/2025", "6/1/2026", "3/1/2025", "9/1/2025", "6/1/2027", "6/1/2029", "6/1/2032", "12/1/2031", "9/1/2028")
+
+for (i in 1:10){
+  for (j in 1:12) {
+    ytm[i,j] <- BondYield(face_value = 100, coupon_rate = bonds_data[i, 3], years = bonds_data[i, 7], price = dirtyprice[i, j], freq = 2)
+
+  }
+}
+ytmData<-data.frame(ytm)
+
+```
+
+
